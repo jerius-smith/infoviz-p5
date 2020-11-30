@@ -2,14 +2,14 @@
 var RadarChart = {
   defaultConfig: {
     containerClass: 'radar-chart',
-    w: 900,
+    w: 1200,
     h: 600,
     factor: 0.95,
     factorLegend: 1,
-    levels: 3,
-    levelTick: false,
+    levels: 5,
+    levelTick: true,
     TickLength: 10,
-    maxValue: 0,
+    maxValue: 1,
     minValue: 0,
     radians: 2 * Math.PI,
     color: d3.scale.category10(),
@@ -177,7 +177,9 @@ var RadarChart = {
 
           var newAxis = axis.enter().append('g');
           if(cfg.axisLine) {
-            newAxis.append('line');
+            newAxis.append('line')
+            .style("stroke", "lightgrey")
+		        .style("stroke-width", "2px");;
           }
           if(cfg.axisText) {
             newAxis.append('text');

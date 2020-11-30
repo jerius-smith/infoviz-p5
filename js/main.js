@@ -49,6 +49,9 @@ var preprocessData = function(data, addTeams, appendName) {
             {axis : "Rebounds", value : scaleData(formattedRow, maxes, mins, "REB"), attrValue : formattedRow["REB"]},
             {axis : "Assists", value : scaleData(formattedRow, maxes, mins, "AST"), attrValue : formattedRow["AST"]},
             {axis : "Steals", value : scaleData(formattedRow, maxes, mins, "STL"), attrValue : formattedRow["STL"]},
+            {axis : "Blocks", value : scaleData(formattedRow, maxes, mins, "BLK"), attrValue : formattedRow["BLK"]},
+            {axis : "Free Throw Percentage", value : scaleData(formattedRow, maxes, mins, "FT_PCT"), attrValue : formattedRow["FT_PCT"]},
+            {axis : "3-Pointer Percentage", value : scaleData(formattedRow, maxes, mins, "FG3_PCT"), attrValue : formattedRow["FG3_PCT"]}
         ];
 
         return structuredData;
@@ -79,9 +82,20 @@ d3.select(document.getElementById('go'))
 
         var chartContainer = d3.select('.radar-chart');
         
-        chartContainer.append("circle").attr("cx",320).attr("cy",590).attr("r", 6).style("fill", "rgb(31, 119, 180)")
-        chartContainer.append("circle").attr("cx",520).attr("cy",590).attr("r", 6).style("fill", "rgb(255, 127, 14)")
-        chartContainer.append("text").attr("x", 330).attr("y", 590).text("Pre-COVID Regular Season").style("font-size", "15px").attr("alignment-baseline","middle")
-        chartContainer.append("text").attr("x", 530).attr("y", 590).text("Bubble Seeding Games").style("font-size", "15px").attr("alignment-baseline","middle")
+        // chart legend
+        chartContainer.append("circle").attr("cx",10).attr("cy",290).attr("r", 6).style("fill", "rgb(31, 119, 180)")
+        chartContainer.append("circle").attr("cx",10).attr("cy",310).attr("r", 6).style("fill", "rgb(255, 127, 14)")
+        chartContainer.append("text").attr("x", 20).attr("y", 290).text("Pre-COVID Regular Season").style("font-size", "15px").attr("alignment-baseline","middle")
+        chartContainer.append("text").attr("x", 20).attr("y", 310).text("Bubble Seeding Games").style("font-size", "15px").attr("alignment-baseline","middle")
 
+        // move labels on the left side of the chart over
+        d3.selectAll(".legend.left")
+            .attr("x", function(d) {
+                return parseFloat(d3.select(this)[0][0].attributes.x.nodeValue) - this.getComputedTextLength();
+            })
+
+        d3.selectAll(".legend.middle")
+            .attr("x", function(d) {
+                return parseFloat(d3.select(this)[0][0].attributes.x.nodeValue) - (this.getComputedTextLength() / 2);
+            })
     });

@@ -1,0 +1,9 @@
+.main {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.legend {
+    font-family: 'Open Sans', sans-serif;
+    font-size: small;
+    text-transform: lowercase;
+}
