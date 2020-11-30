@@ -2,6 +2,16 @@
     font-family: 'Open Sans', sans-serif;
 }
 
+h3 {
+    font-family: 'Open Sans', sans-serif;
+    text-align: center;
+    width: 100%;
+}
+
+label {
+    padding-left: 20px;
+}
+
 .legend {
     font-family: 'Open Sans', sans-serif;
     font-size: small;

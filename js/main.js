@@ -40,18 +40,19 @@ var preprocessData = function(data, addTeams, appendName) {
         });
     }
 
+    //format data rows with the features to be displayed in the radar chart
     dataRows = dataRows.map(formattedRow => {
         var structuredData = {};
         structuredData.className = formattedRow["TEAM_NAME"] + appendName;
         structuredData.axes = [
-            {axis : "Win Percentage", value : scaleData(formattedRow, maxes, mins, "W_PCT"), attrValue : formattedRow["W_PCT"]},
-            {axis : "Field Goal Percentage", value : scaleData(formattedRow, maxes, mins, "FG_PCT"), attrValue : formattedRow["FG_PCT"]},
+            {axis : "Win Percentage", value : scaleData(formattedRow, maxes, mins, "W_PCT"), attrValue : (formattedRow["W_PCT"] * 100).toFixed(2) + "%"},
             {axis : "Rebounds", value : scaleData(formattedRow, maxes, mins, "REB"), attrValue : formattedRow["REB"]},
             {axis : "Assists", value : scaleData(formattedRow, maxes, mins, "AST"), attrValue : formattedRow["AST"]},
             {axis : "Steals", value : scaleData(formattedRow, maxes, mins, "STL"), attrValue : formattedRow["STL"]},
             {axis : "Blocks", value : scaleData(formattedRow, maxes, mins, "BLK"), attrValue : formattedRow["BLK"]},
-            {axis : "Free Throw Percentage", value : scaleData(formattedRow, maxes, mins, "FT_PCT"), attrValue : formattedRow["FT_PCT"]},
-            {axis : "3-Pointer Percentage", value : scaleData(formattedRow, maxes, mins, "FG3_PCT"), attrValue : formattedRow["FG3_PCT"]}
+            {axis : "Field Goal Percentage", value : scaleData(formattedRow, maxes, mins, "FG_PCT"), attrValue : (formattedRow["FG_PCT"] * 100).toFixed(2) + "%"},
+            {axis : "Free Throw Percentage", value : scaleData(formattedRow, maxes, mins, "FT_PCT"), attrValue : (formattedRow["FT_PCT"] * 100).toFixed(2) + "%"},
+            {axis : "3-Pointer Percentage", value : scaleData(formattedRow, maxes, mins, "FG3_PCT"), attrValue : (formattedRow["FG3_PCT"] * 100).toFixed(2) + "%"}
         ];
 
         return structuredData;
@@ -68,7 +69,6 @@ d3.json("../data/bubble_team_data.json", function(data) {
     bubble_data = preprocessData(data, true, " (Bubble)");
 });
 
-
 d3.select(document.getElementById('go'))
     .style("border", "1px solid black")
     .on('click', function() {
@@ -83,10 +83,10 @@ d3.select(document.getElementById('go'))
         var chartContainer = d3.select('.radar-chart');
         
         // chart legend
-        chartContainer.append("circle").attr("cx",10).attr("cy",290).attr("r", 6).style("fill", "rgb(31, 119, 180)")
-        chartContainer.append("circle").attr("cx",10).attr("cy",310).attr("r", 6).style("fill", "rgb(255, 127, 14)")
-        chartContainer.append("text").attr("x", 20).attr("y", 290).text("Pre-COVID Regular Season").style("font-size", "15px").attr("alignment-baseline","middle")
-        chartContainer.append("text").attr("x", 20).attr("y", 310).text("Bubble Seeding Games").style("font-size", "15px").attr("alignment-baseline","middle")
+        chartContainer.append("circle").attr("cx",30).attr("cy",290).attr("r", 6).style("fill", "rgb(31, 119, 180)")
+        chartContainer.append("circle").attr("cx",30).attr("cy",310).attr("r", 6).style("fill", "rgb(255, 127, 14)")
+        chartContainer.append("text").attr("x", 40).attr("y", 290).text("Pre-COVID Regular Season").style("font-size", "15px").attr("alignment-baseline","middle")
+        chartContainer.append("text").attr("x", 40).attr("y", 310).text("Bubble Seeding Games").style("font-size", "15px").attr("alignment-baseline","middle")
 
         // move labels on the left side of the chart over
         d3.selectAll(".legend.left")

@@ -2,7 +2,7 @@
 var RadarChart = {
   defaultConfig: {
     containerClass: 'radar-chart',
-    w: 1200,
+    w: window.innerWidth,
     h: 600,
     factor: 0.95,
     factorLegend: 1,
@@ -242,6 +242,10 @@ var RadarChart = {
           container.classed('focus', 0);
           d3.select(this).classed('focused', 0);
           setTooltip(tooltip, false);
+        })
+        .on('click', function() {
+          d3.select(this).moveToBack();
+          d3.select(newAxis).moveToBack();
         });
 
         polygon.exit()
@@ -385,4 +389,18 @@ var RadarChart = {
     .datum(d)
     .call(chart);
   }
+};
+
+d3.selection.prototype.moveToFront = function() {  
+  return this.each(function(){
+    this.parentNode.appendChild(this);
+  });
+};
+d3.selection.prototype.moveToBack = function() {  
+    return this.each(function() { 
+        var firstChild = this.parentNode.firstChild; 
+        if (firstChild) { 
+            this.parentNode.insertBefore(this, firstChild); 
+        } 
+    });
 };
