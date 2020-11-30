@@ -76,4 +76,12 @@ d3.select(document.getElementById('go'))
                 (data.className === document.getElementById("teams").value + " (Bubble)") ;
         })
         RadarChart.draw(".chart-container", results);
+
+        var chartContainer = d3.select('.radar-chart');
+        
+        chartContainer.append("circle").attr("cx",320).attr("cy",590).attr("r", 6).style("fill", "rgb(31, 119, 180)")
+        chartContainer.append("circle").attr("cx",520).attr("cy",590).attr("r", 6).style("fill", "rgb(255, 127, 14)")
+        chartContainer.append("text").attr("x", 330).attr("y", 590).text("Pre-COVID Regular Season").style("font-size", "15px").attr("alignment-baseline","middle")
+        chartContainer.append("text").attr("x", 530).attr("y", 590).text("Bubble Seeding Games").style("font-size", "15px").attr("alignment-baseline","middle")
+
     });
