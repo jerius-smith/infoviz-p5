@@ -1,11 +1,28 @@
 // Data Preprocessing 
-var precovid_data, bubble_data;
+var precovid_data, bubble_data, playoff_data;
 var team_names = new Set();
 var maxes = {},mins = {};
 
 var scaleData = function(data, maxes, mins, attr) {
     return (data[attr] / maxes[attr]); //+ (mins[attr] * 0.8);
 }
+
+var disablePolygon = function(number) {
+    d3.selectAll(".area.radar-chart-serie" + number)
+        .style("visibility", "hidden");
+
+    d3.selectAll(".circle.radar-chart-serie" + number)
+        .style("visibility", "hidden");
+}
+
+var enablePolygon = function(number) {
+    d3.selectAll(".area.radar-chart-serie" + number)
+        .style("visibility", "visible");
+    
+    d3.selectAll(".circle.radar-chart-serie" + number)
+        .style("visibility", "visible");
+}
+
 var preprocessData = function(data, addTeams, appendName) {
     var headers = data.resultSets[0].headers;
     var dataRows = data.resultSets[0].rowSet;
@@ -69,14 +86,19 @@ d3.json("../data/bubble_team_data.json", function(data) {
     bubble_data = preprocessData(data, true, " (Bubble)");
 });
 
+d3.json("../data/playoffs_team_data.json", function(data) {
+    playoff_data = preprocessData(data,true, " (Playoffs)");
+})
+
 d3.select(document.getElementById('go'))
     .style("border", "1px solid black")
     .on('click', function() {
-        data = precovid_data.concat(bubble_data);
+        data = precovid_data.concat(bubble_data).concat(playoff_data);
 
         results = data.filter(data => {
             return (data.className === document.getElementById("teams").value + " (Pre-COVID)") || 
-                (data.className === document.getElementById("teams").value + " (Bubble)") ;
+                (data.className === document.getElementById("teams").value + " (Bubble)") || 
+                (data.className === document.getElementById("teams").value + " (Playoffs)");
         })
         RadarChart.draw(".chart-container", results);
 
@@ -85,8 +107,96 @@ d3.select(document.getElementById('go'))
         // chart legend
         chartContainer.append("circle").attr("cx",30).attr("cy",290).attr("r", 6).style("fill", "rgb(31, 119, 180)")
         chartContainer.append("circle").attr("cx",30).attr("cy",310).attr("r", 6).style("fill", "rgb(255, 127, 14)")
-        chartContainer.append("text").attr("x", 40).attr("y", 290).text("Pre-COVID Regular Season").style("font-size", "15px").attr("alignment-baseline","middle")
-        chartContainer.append("text").attr("x", 40).attr("y", 310).text("Bubble Seeding Games").style("font-size", "15px").attr("alignment-baseline","middle")
+        chartContainer.append("circle").attr("cx",30).attr("cy",330).attr("r", 6).style("fill", "rgb(44, 160, 44)")
+        chartContainer.append("text")
+            .attr("x", 40)
+            .attr("y", 290)
+            .text("Pre-COVID Regular Season")
+            .style("font-size", "15px")
+            .attr("alignment-baseline","middle")
+            .attr("vis", "on")
+            .on("click", function(d){
+                if (d3.select(this).attr("vis") === "on") {
+                    disablePolygon("0");
+                    d3.select(this).attr("vis", "off");
+                    d3.select(this).style("fill", "rgb(155, 155, 155)")
+                } else {
+                    enablePolygon("0");
+                    d3.select(this).attr("vis", "on");
+                    d3.select(this).style("fill", "rgb(0, 0, 0)")
+                }
+            })
+            .on("mouseover", function(d) {
+                d3.select(this).style("fill", "rgb(155,155,155)")
+            })
+            .on("mouseout", function(d) {
+                if (d3.select(this).attr("vis") === "on") {
+                    d3.select(this).style("fill", "rgb(0,0,0)");
+                } else {
+                    d3.select(this).style("fill", "rgb(155, 155, 155)")
+                }
+            })
+        chartContainer.append("text")
+            .attr("x", 40)
+            .attr("y", 310)
+            .text("Bubble Seeding Games")
+            .style("font-size", "15px")
+            .attr("alignment-baseline","middle")
+            .attr("vis", "on")
+            .on("click", function(d){
+                if (d3.select(this).attr("vis") === "on") {
+                    disablePolygon("1");
+                    d3.select(this).attr("vis", "off");
+                    d3.select(this).style("fill", "rgb(155, 155, 155)")
+                } else {
+                    enablePolygon("1");
+                    d3.select(this).attr("vis", "on");
+                    d3.select(this).style("fill", "rgb(0, 0, 0)")
+                }
+            })
+            .on("mouseover", function(d) {
+                d3.select(this).style("fill", "rgb(155,155,155)")
+            })
+            .on("mouseout", function(d) {
+                if (d3.select(this).attr("vis") === "on") {
+                    d3.select(this).style("fill", "rgb(0,0,0)");
+                } else {
+                    d3.select(this).style("fill", "rgb(155, 155, 155)")
+                }
+            })
+            
+        chartContainer.append("text")
+            .attr("x", 40)
+            .attr("y", 330)
+            .text("Playoff Games")
+            .style("font-size", "15px")
+            .attr("alignment-baseline","middle")
+            .attr("class", "legendText")
+            .attr("vis", "on")
+            .on("click", function(d){
+                if (d3.select(this).attr("vis") === "on") {
+                    disablePolygon("2");
+                    d3.select(this).attr("vis", "off");
+                    d3.select(this).style("fill", "rgb(155, 155, 155)")
+                } else {
+                    enablePolygon("2");
+                    d3.select(this).attr("vis", "on");
+                    d3.select(this).style("fill", "rgb(0, 0, 0)")
+                }
+            })
+            .on("mouseover", function(d) {
+                d3.select(this).style("fill", "rgb(155,155,155)")
+            })
+            .on("mouseout", function(d) {
+                if (d3.select(this).attr("vis") === "on") {
+                    d3.select(this).style("fill", "rgb(0,0,0)");
+                } else {
+                    d3.select(this).style("fill", "rgb(155, 155, 155)")
+                }
+            })
+
+        // filter polygons using legend
+
 
         // move labels on the left side of the chart over
         d3.selectAll(".legend.left")

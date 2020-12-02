@@ -1,4 +1,5 @@
-// code copied from https://github.com/alangrafu/radar-chart-d3/blob/master/src/radar-chart.js by Alvaro Graves
+// orginally code copied from https://github.com/alangrafu/radar-chart-d3/blob/master/src/radar-chart.js by Alvaro Graves
+// but has been edited by us
 var RadarChart = {
   defaultConfig: {
     containerClass: 'radar-chart',
@@ -243,9 +244,10 @@ var RadarChart = {
           d3.select(this).classed('focused', 0);
           setTooltip(tooltip, false);
         })
-        .on('click', function() {
+        .on('click', function(d,i) {
           d3.select(this).moveToBack();
-          d3.select(newAxis).moveToBack();
+          //d3.selectAll(".circle.radar-chart-serie" + i).moveToBack();
+          d3.selectAll(".axis").moveToBack();
         });
 
         polygon.exit()
