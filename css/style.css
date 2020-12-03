@@ -2,6 +2,11 @@ text {
     font-family: 'Open Sans', sans-serif;
 }
 
+p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: small;
+}
+
 h3 {
     font-family: 'Open Sans', sans-serif;
     text-align: center;
@@ -17,3 +22,43 @@ label {
     font-size: small;
     text-transform: lowercase;
 }
+
+.chart-container {
+    float: left;
+    padding-top: 30px;
+}
+
+.player-grid {
+    float: left;
+    height: 500px;
+    width: 30%;
+    overflow: scroll;
+}
+
+.player-grid-header {
+    float: left;
+    width: 30%;
+    text-align: center;
+}
+
+.column {
+    width: 20%;
+    align-items: center;
+    margin: auto;
+    display: inline-block;
+    height: 60px;
+    overflow: hidden;
+  }
+
+  .column svg {
+      display: block;
+      margin: auto;
+      margin-top: 12%;
+  }
+  
+  /* Clear floats after the columns */
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }

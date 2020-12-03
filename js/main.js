@@ -1,5 +1,6 @@
 // Data Preprocessing 
 var precovid_data, bubble_data, playoff_data;
+var precovid_plyr_data, bubble_plyr_data;
 var team_names = new Set();
 var maxes = {},mins = {};
 
@@ -23,7 +24,7 @@ var enablePolygon = function(number) {
         .style("visibility", "visible");
 }
 
-var preprocessData = function(data, addTeams, appendName) {
+var preprocessData = function(data, addTeams, appendName, player = false) {
     var headers = data.resultSets[0].headers;
     var dataRows = data.resultSets[0].rowSet;
 
@@ -60,17 +61,33 @@ var preprocessData = function(data, addTeams, appendName) {
     //format data rows with the features to be displayed in the radar chart
     dataRows = dataRows.map(formattedRow => {
         var structuredData = {};
-        structuredData.className = formattedRow["TEAM_NAME"] + appendName;
-        structuredData.axes = [
-            {axis : "Win Percentage", value : scaleData(formattedRow, maxes, mins, "W_PCT"), attrValue : (formattedRow["W_PCT"] * 100).toFixed(2) + "%"},
-            {axis : "Rebounds", value : scaleData(formattedRow, maxes, mins, "REB"), attrValue : formattedRow["REB"]},
-            {axis : "Assists", value : scaleData(formattedRow, maxes, mins, "AST"), attrValue : formattedRow["AST"]},
-            {axis : "Steals", value : scaleData(formattedRow, maxes, mins, "STL"), attrValue : formattedRow["STL"]},
-            {axis : "Blocks", value : scaleData(formattedRow, maxes, mins, "BLK"), attrValue : formattedRow["BLK"]},
-            {axis : "Field Goal Percentage", value : scaleData(formattedRow, maxes, mins, "FG_PCT"), attrValue : (formattedRow["FG_PCT"] * 100).toFixed(2) + "%"},
-            {axis : "Free Throw Percentage", value : scaleData(formattedRow, maxes, mins, "FT_PCT"), attrValue : (formattedRow["FT_PCT"] * 100).toFixed(2) + "%"},
-            {axis : "3-Pointer Percentage", value : scaleData(formattedRow, maxes, mins, "FG3_PCT"), attrValue : (formattedRow["FG3_PCT"] * 100).toFixed(2) + "%"}
-        ];
+        structuredData.className = !player ? formattedRow["TEAM_NAME"] + appendName : formattedRow["PLAYER_NAME"];
+
+        if (!player) {
+            structuredData.axes = [
+                {axis : "Win Percentage", value : scaleData(formattedRow, maxes, mins, "W_PCT"), attrValue : (formattedRow["W_PCT"] * 100).toFixed(2) + "%"},
+                {axis : "Rebounds", value : scaleData(formattedRow, maxes, mins, "REB"), attrValue : formattedRow["REB"]},
+                {axis : "Assists", value : scaleData(formattedRow, maxes, mins, "AST"), attrValue : formattedRow["AST"]},
+                {axis : "Steals", value : scaleData(formattedRow, maxes, mins, "STL"), attrValue : formattedRow["STL"]},
+                {axis : "Blocks", value : scaleData(formattedRow, maxes, mins, "BLK"), attrValue : formattedRow["BLK"]},
+                {axis : "Field Goal Percentage", value : scaleData(formattedRow, maxes, mins, "FG_PCT"), attrValue : (formattedRow["FG_PCT"] * 100).toFixed(2) + "%"},
+                {axis : "Free Throw Percentage", value : scaleData(formattedRow, maxes, mins, "FT_PCT"), attrValue : (formattedRow["FT_PCT"] * 100).toFixed(2) + "%"},
+                {axis : "3-Pointer Percentage", value : scaleData(formattedRow, maxes, mins, "FG3_PCT"), attrValue : (formattedRow["FG3_PCT"] * 100).toFixed(2) + "%"}
+            ];
+        } else {
+            structuredData.axes = 
+                {"W_PCT" : formattedRow["W_PCT"],
+                "REB" : formattedRow["REB"],
+                "AST" : formattedRow["AST"],
+                "STL" : formattedRow["STL"],
+                "BLK" : formattedRow["BLK"],
+                "FG_PCT" : formattedRow["FG_PCT"],
+                "FT_PCT" : formattedRow["FT_PCT"],
+                "FG3_PCT" : formattedRow["FG3_PCT"],
+                "TEAM_ABBRV": formattedRow["TEAM_ABBREVIATION"],
+                "PTS" : formattedRow["PTS"]
+                };
+        } 
 
         return structuredData;
     });
@@ -90,6 +107,14 @@ d3.json("../data/playoffs_team_data.json", function(data) {
     playoff_data = preprocessData(data,true, " (Playoffs)");
 })
 
+d3.json("../data/precovid_player_data.json", function(data) {
+    precovid_plyr_data = preprocessData(data, false, "", true);
+})
+
+d3.json("../data/bubble_player_data.json", function(data) {
+    bubble_plyr_data = preprocessData(data, false, "", true);
+})
+
 d3.select(document.getElementById('go'))
     .style("border", "1px solid black")
     .on('click', function() {
@@ -105,12 +130,13 @@ d3.select(document.getElementById('go'))
         var chartContainer = d3.select('.radar-chart');
         
         // chart legend
-        chartContainer.append("circle").attr("cx",30).attr("cy",290).attr("r", 6).style("fill", "rgb(31, 119, 180)")
-        chartContainer.append("circle").attr("cx",30).attr("cy",310).attr("r", 6).style("fill", "rgb(255, 127, 14)")
-        chartContainer.append("circle").attr("cx",30).attr("cy",330).attr("r", 6).style("fill", "rgb(44, 160, 44)")
+        var legend_y = 450; // y-value of the legends placement
+        chartContainer.append("circle").attr("cx",30).attr("cy",legend_y).attr("r", 6).style("fill", "rgb(31, 119, 180)")
+        chartContainer.append("circle").attr("cx",30).attr("cy",legend_y + 20).attr("r", 6).style("fill", "rgb(255, 127, 14)")
+        chartContainer.append("circle").attr("cx",30).attr("cy",legend_y + 40).attr("r", 6).style("fill", "rgb(44, 160, 44)")
         chartContainer.append("text")
             .attr("x", 40)
-            .attr("y", 290)
+            .attr("y", legend_y)
             .text("Pre-COVID Regular Season")
             .style("font-size", "15px")
             .attr("alignment-baseline","middle")
@@ -138,7 +164,7 @@ d3.select(document.getElementById('go'))
             })
         chartContainer.append("text")
             .attr("x", 40)
-            .attr("y", 310)
+            .attr("y", legend_y + 20)
             .text("Bubble Seeding Games")
             .style("font-size", "15px")
             .attr("alignment-baseline","middle")
@@ -167,7 +193,7 @@ d3.select(document.getElementById('go'))
             
         chartContainer.append("text")
             .attr("x", 40)
-            .attr("y", 330)
+            .attr("y", legend_y + 40)
             .text("Playoff Games")
             .style("font-size", "15px")
             .attr("alignment-baseline","middle")
@@ -208,4 +234,9 @@ d3.select(document.getElementById('go'))
             .attr("x", function(d) {
                 return parseFloat(d3.select(this)[0][0].attributes.x.nodeValue) - (this.getComputedTextLength() / 2);
             })
+
+        //display individual player stats
+        generatePlayerGrid(getTeamPlayers(document.getElementById("teams").value, precovid_plyr_data),
+            getTeamPlayers(document.getElementById("teams").value, bubble_plyr_data), 
+            ".player-grid");
     });

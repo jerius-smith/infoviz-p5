@@ -7,16 +7,22 @@
 </head>
 <body>
     <div id="main">
-        <h3>NBA Regular Season vs. Bubble Games Average Performances</h3>
-        <label for="teams">Choose a team:</label>
-        <select name="teams" id="teams">
-            <option value=""></option>
-        </select>
-        <button id='go'>GO</button>
+        <div class="heading">
+            <h3>NBA Regular Season vs. Bubble Games Average Performances</h3>
+            <label for="teams">Choose a team:</label>
+            <select name="teams" id="teams">
+                <option value=""></option>
+            </select>
+            <button id='go'>GO</button>
+        </div>
         <div class="chart-container"></div>
+        <div class="player-grid-header"></div>
+        <div class="player-grid"></div>
+        
     </div>
 </body>
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="./js/main.js"></script>
 <script src="./js/radar-chart.js"></script>
+<script src="./js/player-stats.js"></script>
 </html>
