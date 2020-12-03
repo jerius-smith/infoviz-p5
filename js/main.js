@@ -1,6 +1,6 @@
 // Data Preprocessing 
 var precovid_data, bubble_data, playoff_data;
-var precovid_plyr_data, bubble_plyr_data;
+var precovid_plyr_data, bubble_plyr_data, playoff_plyr_data;
 var team_names = new Set();
 var maxes = {},mins = {};
 
@@ -113,6 +113,10 @@ d3.json("../data/precovid_player_data.json", function(data) {
 
 d3.json("../data/bubble_player_data.json", function(data) {
     bubble_plyr_data = preprocessData(data, false, "", true);
+})
+
+d3.json("../data/playoffs_player_data.json", function(data) {
+    playoff_plyr_data = preprocessData(data, false, "", true);
 })
 
 d3.select(document.getElementById('go'))
@@ -236,7 +240,13 @@ d3.select(document.getElementById('go'))
             })
 
         //display individual player stats
+        var selection = `<select name="teams" id='bubble-part' id="teams" style="display: block; margin: auto;">
+            <option value="seed">Seeding Games</option>
+            <option value="playoff">Playoff Games</option>
+            </select>
+            <button class='go-player' style="display: block; margin: auto; margin-top: 10px;">GO</button>`;
+
         generatePlayerGrid(getTeamPlayers(document.getElementById("teams").value, precovid_plyr_data),
             getTeamPlayers(document.getElementById("teams").value, bubble_plyr_data), 
-            ".player-grid");
+            ".player-grid", selection);
     });

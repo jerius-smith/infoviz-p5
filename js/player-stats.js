@@ -23,10 +23,10 @@ var xScale = d3.scale.linear().domain([-1, 1]).range([0, 250])
 var colorScale = d3.scale.linear().domain([-1, 0, 1])
     .range(["red", "gold", "green"])
 
-var generatePlayerGrid = function(data1, data2, id) {
+var generatePlayerGrid = function(data1, data2, id, selection) {
     //clear previous table
     document.getElementsByClassName("player-grid-header")[0].innerHTML = "";
-    document.getElementsByClassName("player-grid-footer")[0].innerHTML = "";
+    document.getElementsByClassName("player-grid-footer")[0].innerHTML = selection;
     document.getElementsByClassName("player-grid")[0].innerHTML = "";
 
     var chart = d3.select(id)
@@ -118,6 +118,29 @@ var generatePlayerGrid = function(data1, data2, id) {
         })
         .text("+100%")
         .style("font-size", "x-small")
+
+    d3.select(".go-player")
+        .on("click", function(d) {
+            if (document.getElementById("bubble-part").value === "seed") {
+                selection = `<select name="teams" id='bubble-part' id="teams" style="display: block; margin: auto;">
+                    <option value="seed">Seeding Games</option>
+                    <option value="playoff">Playoff Games</option>
+                    </select>
+                    <button class='go-player' style="display: block; margin: auto; margin-top: 10px;">GO</button>`;
+                generatePlayerGrid(getTeamPlayers(document.getElementById("teams").value, precovid_plyr_data),
+                    getTeamPlayers(document.getElementById("teams").value, bubble_plyr_data), 
+                    ".player-grid", selection);
+            } else {
+                selection = `<select name="teams" id='bubble-part' id="teams" style="display: block; margin: auto;">
+                    <option value="playoff">Playoff Games</option>
+                    <option value="seed">Seeding Games</option>
+                    </select>
+                    <button class='go-player' style="display: block; margin: auto; margin-top: 10px;">GO</button>`;
+                generatePlayerGrid(getTeamPlayers(document.getElementById("teams").value, precovid_plyr_data),
+                    getTeamPlayers(document.getElementById("teams").value, playoff_plyr_data), 
+                    ".player-grid", selection);
+            }
+        })
 }
 
 var getTeamPlayers = function(name, players) {
