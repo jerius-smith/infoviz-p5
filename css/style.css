@@ -13,8 +13,14 @@ h3 {
     width: 100%;
 }
 
-label {
+.heading label {
+    font-family: 'Open Sans', sans-serif;
     padding-left: 20px;
+}
+
+label {
+    font-family: 'Open Sans', sans-serif;
+    font-size: smaller;
 }
 
 .legend {
@@ -46,6 +52,7 @@ label {
     width: 30%;
     text-align: center;
     height: 50px;
+    margin-top: 5px;
 }
 
 .column {

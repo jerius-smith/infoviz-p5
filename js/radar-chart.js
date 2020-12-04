@@ -4,7 +4,7 @@ var RadarChart = {
   defaultConfig: {
     containerClass: 'radar-chart',
     w: window.innerWidth * .65,
-    h: 600,
+    h: 620,
     factor: 0.95,
     factorLegend: 1,
     levels: 5,
@@ -38,6 +38,7 @@ var RadarChart = {
   chart: function() {
     // default config
     var cfg = Object.create(RadarChart.defaultConfig);
+    // function to display message on hover
     function setTooltip(tooltip, msg){
       if(msg === false || msg == undefined){
         tooltip.classed("visible", 0);
@@ -63,6 +64,7 @@ var RadarChart = {
         tooltip.attr("transform", "translate(" + (coords[0]+10) + "," + (coords[1]-10) + ")")
       }
     }
+    // construct the radar plot
     function radar(selection) {
       selection.each(function(data) {
         var container = d3.select(this);
@@ -82,7 +84,7 @@ var RadarChart = {
           }
           return datum;
         });
-
+        // define the range of the data
         var maxValue = Math.max(cfg.maxValue, d3.max(data, function(d) {
           return d3.max(d.axes, function(o){ return o.value; });
         }));
@@ -95,6 +97,7 @@ var RadarChart = {
 
         container.classed(cfg.containerClass, 1);
 
+        // helper functions used to define the orientation of the axis and level lines
         function getPosition(i, range, factor, func){
           factor = typeof factor !== 'undefined' ? factor : 1;
           return range * (1 - factor * func(i * cfg.radians / total));
@@ -197,7 +200,7 @@ var RadarChart = {
             .attr('x2', function(d, i) { return (cfg.w/2-radius2)+getHorizontalPosition(i, radius2, cfg.factor); })
             .attr('y2', function(d, i) { return (cfg.h/2-radius2)+getVerticalPosition(i, radius2, cfg.factor); });
           }
-
+          // display the axis labels at the end of each axis line
           if(cfg.axisText) {
             axis.select('text')
             .attr('class', function(d, i){
@@ -230,21 +233,22 @@ var RadarChart = {
           polygonType = 'polyline';
         }
 
+        // define the polygons in the radar plot
         polygon.enter().append(polygonType)
         .classed({area: 1, 'd3-enter': 1})
-        .on('mouseover', function (dd){
+        .on('mouseover', function (dd){ // on mouseover displpay the team and part of the season
           d3.event.stopPropagation();
           container.classed('focus', 1);
           d3.select(this).classed('focused', 1);
           setTooltip(tooltip, cfg.tooltipFormatClass(dd.className));
         })
-        .on('mouseout', function(){
+        .on('mouseout', function(){ 
           d3.event.stopPropagation();
           container.classed('focus', 0);
           d3.select(this).classed('focused', 0);
           setTooltip(tooltip, false);
         })
-        .on('click', function(d,i) {
+        .on('click', function(d,i) { // on click move the polygon to the back so observe other polygons
           d3.select(this).moveToBack();
           //d3.selectAll(".circle.radar-chart-serie" + i).moveToBack();
           d3.selectAll(".axis").moveToBack();
@@ -281,6 +285,7 @@ var RadarChart = {
           d3.select(this).classed('d3-enter', 0); // trigger css transition
         });
 
+        // define the circle tips at the vertices of each polygon
         if(cfg.circles && cfg.radius) {
 
           var circleGroups = container.selectAll('g.circle-group').data(data, cfg.axisJoin);
@@ -309,18 +314,14 @@ var RadarChart = {
 
           circle.enter().append('circle')
           .classed({circle: 1, 'd3-enter': 1})
-          .on('mouseover', function(dd){
+          .on('mouseover', function(dd){ // on mouseover show the actual data value
             d3.event.stopPropagation();
             setTooltip(tooltip, cfg.tooltipFormatValue(dd[0].attrValue));
-            //container.classed('focus', 1);
-            //container.select('.area.radar-chart-serie'+dd[1]).classed('focused', 1);
           })
           .on('mouseout', function(dd){
             d3.event.stopPropagation();
             setTooltip(tooltip, false);
             container.classed('focus', 0);
-            //container.select('.area.radar-chart-serie'+dd[1]).classed('focused', 0);
-            //No idea why previous line breaks tooltip hovering area after hoverin point.
           });
 
           circle.exit()
@@ -383,7 +384,7 @@ var RadarChart = {
     var chart = RadarChart.chart().config(options);
     var cfg = chart.config();
 
-    d3.select(id).select('svg').remove();
+    d3.select(id).select('svg').remove(); // remove the previous radar plot to reser
     d3.select(id)
     .append("svg")
     .attr("width", cfg.w)
@@ -393,6 +394,7 @@ var RadarChart = {
   }
 };
 
+// helper functions to move the d3 elements to the foreground and background
 d3.selection.prototype.moveToFront = function() {  
   return this.each(function(){
     this.parentNode.appendChild(this);

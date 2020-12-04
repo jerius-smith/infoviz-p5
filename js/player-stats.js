@@ -1,4 +1,13 @@
+/* The purpose of this file is to create and display the individual
+ * player stats in a table.
+ * 
+ */
+
+
 var team_name_dict;
+
+// Define the arrows to indicate player performance
+// Each in a function that takes in a color and return a svg
 var downArrow = function(color) { return `<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-down-circle" fill="`+ color +`" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
 <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4z "/>
@@ -12,6 +21,7 @@ var noArrow = function(color) { return `<svg width="1em" height="1em" viewBox="0
   <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
 </svg>`};
 
+// Store a dictionary of team names and their abbreviations for filtering
 d3.json("../data/team_name_abbrev.json", function(data) {
     team_name_dict = data;
 });
@@ -19,10 +29,12 @@ d3.json("../data/team_name_abbrev.json", function(data) {
 //position scale
 var xScale = d3.scale.linear().domain([-1, 1]).range([0, 250])
 
-//The mystical polylinear color scale
+//The mystical polylinear color scale 
 var colorScale = d3.scale.linear().domain([-1, 0, 1])
     .range(["red", "gold", "green"])
 
+// create the player stat table
+// takes in a base dataset and one to compare to
 var generatePlayerGrid = function(data1, data2, id, selection) {
     //clear previous table
     document.getElementsByClassName("player-grid-header")[0].innerHTML = "";
@@ -38,35 +50,37 @@ var generatePlayerGrid = function(data1, data2, id, selection) {
 
     var header = d3.select(".player-grid-header")
 
+    // create table header
     var row = header.append("div") 
             .attr('class', 'row');
     
     row.append('div')
             .attr('class', 'column')
             .append('p')
-            .text("name");
+            .text("Name");
     
     row.append('div')
             .attr('class', 'column')
             .append('p')
-            .text("field goal %");
+            .text("Field Goal %");
 
     row.append('div')
             .attr('class', 'column')
             .append('p')
-            .text("rebounds");
+            .text("Rebounds");
     
     row.append('div')
             .attr('class', 'column')
             .append('p')
-            .text("assists");
+            .text("Assists");
     
     row.append('div')
             .attr('class', 'column')
             .append('p')
-            .text("blocks");
+            .text("Blocks");
     
     var attrs = ["FG_PCT", "REB", "AST", "BLK"];
+    // create row for each player
     data1.forEach(player => {
         if (data2.filter(plyr => player.className === plyr.className).length > 0) {
             var row = chart.append("div") 
@@ -82,7 +96,7 @@ var generatePlayerGrid = function(data1, data2, id, selection) {
                     .attr('class', 'column')
                     .append('g')
                     .html(getArrow(player, 
-                        data2.filter(plyr => player.className === plyr.className)[0], attr));
+                        data2.filter(plyr => player.className === plyr.className)[0], attr)); // retrieve the right arrow based on the stats
             })
         }
         
@@ -92,6 +106,8 @@ var generatePlayerGrid = function(data1, data2, id, selection) {
     var vis = d3.select(".player-grid-footer").append('svg');
 
     var arr = d3.range(-1, 1, 0.01)
+    vis.style("width", "300px")
+        .style("height", "60px");
 
     vis.selectAll('rect').data(arr).enter()
         .append('rect')
@@ -111,7 +127,7 @@ var generatePlayerGrid = function(data1, data2, id, selection) {
         .text("-100%")
         .style("font-size", "x-small")
     
-        vis.append("text")
+    vis.append("text")
         .attr({
             x : 260,
             y : 50,
@@ -119,10 +135,21 @@ var generatePlayerGrid = function(data1, data2, id, selection) {
         .text("+100%")
         .style("font-size", "x-small")
 
+    d3.select(".player-grid-footer").append("p")
+        .attr({
+            x : 0,
+            y : 70,
+        })
+        .text("*** Player are ordered by the highest scorers in the regular season prior to NBA shutdown ***")
+        .style("font-size", "xx-small")
+        .style("overflow-wrap", "normal")
+
+    // change the filter of the player table "seeding games" or "playoffs"
     d3.select(".go-player")
         .on("click", function(d) {
             if (document.getElementById("bubble-part").value === "seed") {
-                selection = `<select name="teams" id='bubble-part' id="teams" style="display: block; margin: auto;">
+                selection = `<label for='bubble-part'>NBA Regular Season vs.</label>
+                    <select name="teams" id='bubble-part' id="teams" style="display: block; margin: auto;">
                     <option value="seed">Seeding Games</option>
                     <option value="playoff">Playoff Games</option>
                     </select>
@@ -131,7 +158,8 @@ var generatePlayerGrid = function(data1, data2, id, selection) {
                     getTeamPlayers(document.getElementById("teams").value, bubble_plyr_data), 
                     ".player-grid", selection);
             } else {
-                selection = `<select name="teams" id='bubble-part' id="teams" style="display: block; margin: auto;">
+                selection = `<label for='bubble-part'>NBA Regular Season vs.</label>
+                    <select name="teams" id='bubble-part' id="teams" style="display: block; margin: auto;">
                     <option value="playoff">Playoff Games</option>
                     <option value="seed">Seeding Games</option>
                     </select>
@@ -143,12 +171,14 @@ var generatePlayerGrid = function(data1, data2, id, selection) {
         })
 }
 
+// returns all the players of a given team
 var getTeamPlayers = function(name, players) {
     return players.filter( player => {
         return player.axes["TEAM_ABBRV"] == team_name_dict[name];
     });
 }
 
+// get the right arrow and color
 var getArrow = function(data1, data2, attr) {
     if (data2) {
         if (data1.axes[attr] < data2.axes[attr]) {
@@ -161,6 +191,7 @@ var getArrow = function(data1, data2, attr) {
     }
 }
 
+// get the color based of the colorScale using percent change
 var getColor = function(a, b) {
     return colorScale((b - a) / a);
 }
