@@ -3,6 +3,7 @@ var precovid_data, bubble_data, playoff_data;
 var precovid_plyr_data, bubble_plyr_data, playoff_plyr_data;
 var team_names = new Set();
 var maxes = {},mins = {};
+var teamsLoaded = false;
 
 // Scale the data so each value will be in a range of [0, 1]
 var scaleData = function(data, maxes, mins, attr) {
@@ -51,7 +52,8 @@ var preprocessData = function(data, addTeams, appendName, player = false) {
         return formattedRow;
     });
     
-    if (addTeams) {
+    if (addTeams && !teamsLoaded) {
+        teamsLoaded = true;
         var teamsDropdown = document.getElementById('teams');
         
         team_names.forEach(name => {
